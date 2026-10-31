@@ -23,6 +23,8 @@
       color: #f0f6fc;
       overflow-x: hidden;
       touch-action: manipulation;
+      margin: 0;
+      padding: 0;
     }
 
     .neon-glow-green {
@@ -37,7 +39,6 @@
       text-shadow: 0 0 12px rgba(255, 42, 109, 0.7);
     }
 
-    /* Custom scrollbar for game container if needed */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: #0d131e; }
     ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
@@ -47,47 +48,34 @@
       image-rendering: crisp-edges;
     }
 
-    /* Directional Touch Pad styling */
-    .d-pad-btn {
-      background: linear-gradient(145deg, #182232, #0f1622);
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      transition: all 0.08s ease;
-    }
-    .d-pad-btn:active {
-      transform: scale(0.92);
-      background: linear-gradient(145deg, #20e3b2, #10b981);
-      color: #080b11;
-      box-shadow: 0 0 15px rgba(32, 227, 178, 0.6);
-    }
-
     .modal-backdrop {
-      background: rgba(8, 11, 17, 0.82);
+      background: rgba(8, 11, 17, 0.92);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-3 sm:p-6">
+<body class="min-h-[100dvh] flex flex-col items-center justify-between p-1 sm:p-6">
 
   <!-- Main Container -->
-  <main class="w-full max-w-xl flex flex-col items-center gap-4">
+  <main class="w-full max-w-[100vw] sm:max-w-xl flex flex-col items-center justify-center gap-1 sm:gap-4 flex-1">
     
     <!-- Top Header & Scoreboard -->
-    <header class="w-full flex flex-col gap-3">
+    <header class="w-full flex flex-col gap-1 sm:gap-3 px-2 sm:px-0">
       <div class="flex items-center justify-between">
-        <h1 class="text-3xl sm:text-4xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 neon-text-green flex items-center gap-2">
+        <h1 class="text-xl sm:text-4xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 neon-text-green flex items-center gap-2">
           <span>⚡</span> CYBER SNAKE
         </h1>
         
         <!-- Mute Sound Toggle -->
-        <button id="soundToggle" class="p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/50 text-slate-300 transition-all flex items-center justify-center" aria-label="Toggle Sound">
+        <button id="soundToggle" class="p-2 sm:p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/50 text-slate-300 transition-all flex items-center justify-center" aria-label="Toggle Sound">
           <svg id="soundIconOn" class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"></path></svg>
           <svg id="soundIconOff" class="w-5 h-5 text-slate-500 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" stroke-dasharray="2 2"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path></svg>
         </button>
       </div>
 
       <!-- Stats Bar -->
-      <div class="w-full bg-slate-900/90 border border-slate-800 rounded-2xl p-3 sm:p-4 flex items-center justify-between shadow-lg">
+      <div class="w-full bg-slate-900/90 border border-slate-800 rounded-2xl p-2 sm:p-4 flex items-center justify-between shadow-lg">
         <div class="flex flex-col">
           <span class="text-xs font-semibold text-slate-400 tracking-wider uppercase">Score</span>
           <span id="score" class="text-2xl sm:text-3xl font-black text-emerald-400">0</span>
@@ -107,81 +95,78 @@
     </header>
 
     <!-- Canvas Play Area -->
-    <div class="relative w-full aspect-square rounded-2xl overflow-hidden border-2 border-slate-800/80 bg-slate-950 shadow-2xl neon-glow-green">
+    <div class="relative w-full max-w-[100vw] sm:max-w-none aspect-square sm:rounded-2xl overflow-hidden border-y-2 sm:border-2 border-slate-800/80 bg-slate-950 shadow-2xl neon-glow-green touch-none">
       <canvas id="gameCanvas" class="w-full h-full block cursor-pointer"></canvas>
 
       <!-- Overlay Menus (Start / Pause / Game Over) -->
-      <div id="overlay" class="absolute inset-0 modal-backdrop flex flex-col items-center justify-center p-6 text-center transition-all duration-300 opacity-100 z-10">
+      <div id="overlay" class="absolute inset-0 modal-backdrop flex flex-col items-center justify-center p-3 sm:p-6 overflow-y-auto z-50">
         
-        <!-- START / MENU MODE -->
-        <div id="menuStart" class="flex flex-col items-center gap-5 w-full max-w-xs">
-          <div class="space-y-1">
-            <h2 class="text-3xl font-extrabold text-white">SELECT MODE</h2>
-            <p class="text-xs text-slate-400">Choose your game speed & dynamic</p>
+        <!-- START MENU -->
+        <div id="menuStart" class="w-full max-w-sm flex flex-col items-center gap-3 sm:gap-5 text-center my-auto py-2">
+          <div class="flex flex-col gap-1">
+            <h2 class="text-2xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300 neon-text-green">SELECT MODE</h2>
+            <p class="text-xs sm:text-sm text-slate-400">Choose your speed challenge</p>
           </div>
 
-          <div class="w-full grid grid-cols-1 gap-2.5">
-            <button data-speed="easy" class="mode-btn py-3 px-4 rounded-xl bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 hover:border-emerald-500 font-bold text-slate-200 transition-all flex justify-between items-center">
-              <span>🟢 Relaxed</span>
-              <span class="text-xs text-slate-400 font-normal">Slow & Smooth</span>
+          <!-- Difficulty Buttons -->
+          <div class="w-full flex flex-col gap-2">
+            <button class="mode-btn py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700/60 border border-slate-700 font-bold text-slate-200 transition-all flex justify-between items-center text-sm sm:text-base" data-speed="easy">
+              <span>🟢 Easy</span> <span class="text-xs font-normal text-slate-400">Relaxed</span>
             </button>
-            <button data-speed="medium" class="mode-btn py-3 px-4 rounded-xl bg-emerald-500/20 border-2 border-emerald-500 font-bold text-emerald-300 transition-all flex justify-between items-center shadow-lg shadow-emerald-500/10">
-              <span>⚡ Classic</span>
-              <span class="text-xs text-emerald-400 font-normal">Balanced</span>
+            <button class="mode-btn py-2.5 px-4 rounded-xl bg-emerald-500/20 border-2 border-emerald-500 font-bold text-emerald-300 transition-all flex justify-between items-center text-sm sm:text-base shadow-lg shadow-emerald-500/10" data-speed="medium">
+              <span>⚡ Medium</span> <span class="text-xs font-normal text-emerald-400/80">Recommended</span>
             </button>
-            <button data-speed="hard" class="mode-btn py-3 px-4 rounded-xl bg-slate-800 hover:bg-rose-600/30 border border-slate-700 hover:border-rose-500 font-bold text-slate-200 transition-all flex justify-between items-center">
-              <span>🔥 Hyper</span>
-              <span class="text-xs text-slate-400 font-normal">Lightning Fast</span>
+            <button class="mode-btn py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700/60 border border-slate-700 font-bold text-slate-200 transition-all flex justify-between items-center text-sm sm:text-base" data-speed="hard">
+              <span>🔥 Hard</span> <span class="text-xs font-normal text-slate-400">Fast</span>
             </button>
-            <button data-speed="progressive" class="mode-btn py-3 px-4 rounded-xl bg-slate-800 hover:bg-cyan-600/30 border border-slate-700 hover:border-cyan-500 font-bold text-slate-200 transition-all flex justify-between items-center">
-              <span>📈 Dynamic</span>
-              <span class="text-xs text-slate-400 font-normal">Speeds up</span>
+            <button class="mode-btn py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700/60 border border-slate-700 font-bold text-slate-200 transition-all flex justify-between items-center text-sm sm:text-base" data-speed="progressive">
+              <span>🚀 Progressive</span> <span class="text-xs font-normal text-slate-400">Speeds Up</span>
             </button>
           </div>
 
-          <button id="startBtn" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-slate-950 font-black text-lg tracking-wider shadow-lg shadow-emerald-500/25 transition-all transform hover:scale-[1.02] active:scale-95">
-            PLAY NOW
+          <button id="startBtn" class="w-full py-3.5 sm:py-4 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 font-black text-slate-950 text-base sm:text-lg shadow-lg shadow-emerald-500/25 hover:opacity-95 active:scale-95 transition-all">
+            START GAME
           </button>
         </div>
 
-        <!-- PAUSE MODE -->
-        <div id="menuPause" class="hidden flex-col items-center gap-5">
-          <h2 class="text-4xl font-black text-amber-400 tracking-wider">GAME PAUSED</h2>
-          <p class="text-slate-300 text-sm">Take a breather!</p>
-          <div class="flex flex-col gap-2.5 w-full max-w-xs">
-            <button id="resumeBtn" class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-lg shadow-lg shadow-emerald-500/20 transition-all transform hover:scale-105 active:scale-95">
+        <!-- PAUSE MENU -->
+        <div id="menuPause" class="w-full max-w-xs flex flex-col items-center gap-5 text-center hidden my-auto py-2">
+          <h2 class="text-3xl font-black text-teal-400 neon-text-green tracking-wider">GAME PAUSED</h2>
+          
+          <div class="w-full flex flex-col gap-3">
+            <button id="resumeBtn" class="w-full py-3.5 rounded-xl bg-emerald-500 font-bold text-slate-950 shadow-lg shadow-emerald-500/20 active:scale-95 transition-all">
               RESUME
             </button>
-            <button id="pauseMainMenuBtn" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-bold text-sm transition-all">
+            <button id="pauseMainMenuBtn" class="w-full py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 font-bold text-slate-200 active:scale-95 transition-all">
               MAIN MENU
             </button>
           </div>
         </div>
 
-        <!-- GAME OVER MODE -->
-        <div id="menuOver" class="hidden flex-col items-center gap-4 w-full max-w-xs">
-          <div class="space-y-1">
-            <h2 id="overTitle" class="text-4xl font-black text-rose-500 neon-text-pink tracking-wider">GAME OVER</h2>
-            <p id="overSubtitle" class="text-xs text-slate-400">You crashed into yourself!</p>
+        <!-- GAME OVER MENU -->
+        <div id="menuOver" class="w-full max-w-xs flex flex-col items-center gap-5 text-center hidden my-auto py-2">
+          <div class="flex flex-col gap-1">
+            <h2 id="overTitle" class="text-3xl sm:text-4xl font-black text-pink-500 neon-text-pink tracking-wider">GAME OVER</h2>
+            <p id="overSubtitle" class="text-xs text-slate-400">Crashed into obstacles!</p>
           </div>
 
-          <div class="w-full bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex justify-around">
-            <div class="text-center">
-              <div class="text-xs text-slate-400 uppercase font-bold">Final Score</div>
-              <div id="finalScore" class="text-2xl font-black text-emerald-400">0</div>
+          <div class="w-full bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex justify-around">
+            <div class="flex flex-col">
+              <span class="text-xs text-slate-400 uppercase font-semibold">Score</span>
+              <span id="finalScore" class="text-2xl font-black text-emerald-400">0</span>
             </div>
-            <div class="w-px bg-slate-800"></div>
-            <div class="text-center">
-              <div class="text-xs text-slate-400 uppercase font-bold">Best Score</div>
-              <div id="finalBest" class="text-2xl font-black text-cyan-400">0</div>
+            <div class="w-[1px] bg-slate-800"></div>
+            <div class="flex flex-col">
+              <span class="text-xs text-slate-400 uppercase font-semibold">Best</span>
+              <span id="finalBest" class="text-2xl font-black text-cyan-400">0</span>
             </div>
           </div>
 
-          <div class="flex flex-col gap-2 w-full">
-            <button id="restartBtn" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-slate-950 font-black text-lg tracking-wider shadow-lg shadow-emerald-500/25 transition-all transform hover:scale-[1.02] active:scale-95">
+          <div class="w-full flex flex-col gap-3">
+            <button id="restartBtn" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 font-bold text-slate-950 shadow-lg shadow-emerald-500/25 active:scale-95 transition-all">
               PLAY AGAIN
             </button>
-            <button id="overMainMenuBtn" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-bold text-sm transition-all">
+            <button id="overMainMenuBtn" class="w-full py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 font-bold text-slate-200 active:scale-95 transition-all">
               MAIN MENU
             </button>
           </div>
@@ -190,21 +175,14 @@
       </div>
     </div>
 
-    <!-- Controls Helper & Mobile Touch D-Pad -->
-    <div class="w-full flex flex-col items-center gap-3">
+    <!-- Controls Helper -->
+    <div class="w-full flex flex-col items-center gap-2 px-2 sm:px-0">
       <p class="text-xs text-slate-400 text-center hidden sm:block">
-        Use <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">Arrow Keys</kbd> or <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">WASD</kbd> to change direction · <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">Space</kbd> / <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">P</kbd> to Pause · Swipe on canvas supported
+        Use <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">Arrow Keys</kbd> or <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">WASD</kbd> to change direction · <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">Space</kbd> / <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">P</kbd> to Pause · Swipe on screen to turn
       </p>
-
-      <!-- On-Screen Directional Pad for Mobile -->
-      <div class="grid grid-cols-3 grid-rows-2 gap-2 w-48 sm:hidden mt-1" aria-label="Touch D-Pad Controls">
-        <div></div>
-        <button class="d-pad-btn py-3.5 rounded-xl text-white font-black text-xl flex items-center justify-center" data-dir="up" aria-label="Up">▲</button>
-        <div></div>
-        <button class="d-pad-btn py-3.5 rounded-xl text-white font-black text-xl flex items-center justify-center" data-dir="left" aria-label="Left">◀</button>
-        <button class="d-pad-btn py-3.5 rounded-xl text-white font-black text-xl flex items-center justify-center" data-dir="down" aria-label="Down">▼</button>
-        <button class="d-pad-btn py-3.5 rounded-xl text-white font-black text-xl flex items-center justify-center" data-dir="right" aria-label="Right">▶</button>
-      </div>
+      <p class="text-xs text-slate-400 text-center block sm:hidden">
+        Swipe anywhere on screen or canvas to control the snake
+      </p>
     </div>
 
   </main>
@@ -312,40 +290,38 @@
     const overTitle = document.getElementById("overTitle");
     const overSubtitle = document.getElementById("overSubtitle");
     const powerupStatus = document.getElementById("powerupStatus");
-    const powerupIcon = document.getElementById("powerupIcon");
     const powerupText = document.getElementById("powerupText");
 
     // Game Configuration
-    const GRID_SIZE = 20; // 20x20 grid
+    const GRID_SIZE = 20;
     let cellSize = 0;
 
-    // Difficulty Speed Settings (ms per logic step)
+    // Slower Speed Settings
     const SPEEDS = {
-      easy: 130,
-      medium: 95,
-      hard: 65,
-      progressive: 110
+      easy: 160,
+      medium: 125,
+      hard: 95,
+      progressive: 140
     };
     let selectedMode = 'medium';
     let currentStepDelay = SPEEDS.medium;
 
     // Game State Variables
     let snake = [];
-    let prevSnake = []; // Used for sub-frame visual interpolation
+    let prevSnake = [];
     let direction = { x: 1, y: 0 };
     let nextDirection = { x: 1, y: 0 };
-    let food = null; // { x, y, type: 'apple' | 'golden' | 'slow' | 'shrink', duration: timestamp }
+    let food = null;
     let particles = [];
     let floatingTexts = [];
     let score = 0;
     let bestScore = 0;
-    let gameState = "menu"; // "menu", "playing", "paused", "over"
+    let gameState = "menu"; // Starts correctly on main menu
     let turnBuffer = [];
 
     // Active Power-up Timers
-    let activePowerup = null; // { type, expiresAt }
+    let activePowerup = null;
 
-    // Logic timing accumulator variables for requestAnimationFrame
     let lastTime = 0;
     let accumulator = 0;
 
@@ -384,12 +360,11 @@
 
       const pos = emptyCells[Math.floor(Math.random() * emptyCells.length)];
       
-      // Determine food type probabilities
       const rand = Math.random();
       let type = 'apple';
-      if (rand > 0.88) type = 'golden';    // 12% Golden Apple (3x score)
-      else if (rand > 0.78) type = 'slow'; // 10% Slow Berry
-      else if (rand > 0.70) type = 'shrink';// 8% Shrink Berry
+      if (rand > 0.88) type = 'golden';
+      else if (rand > 0.78) type = 'slow';
+      else if (rand > 0.70) type = 'shrink';
 
       return {
         x: pos.x,
@@ -431,7 +406,6 @@
     }
 
     function updateEffects() {
-      // Particles
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
         p.x += p.vx;
@@ -440,7 +414,6 @@
         if (p.alpha <= 0) particles.splice(i, 1);
       }
 
-      // Floating Texts
       for (let i = floatingTexts.length - 1; i >= 0; i--) {
         const ft = floatingTexts[i];
         ft.y += ft.vy;
@@ -498,7 +471,6 @@
       sfx.playGameOver();
       gameState = "over";
       
-      // Explosion at snake head
       if (snake.length > 0) {
         createExplosion(snake[0].x, snake[0].y, "#ff2a6d", 30);
       }
@@ -512,7 +484,6 @@
     function setDirection(newDir) {
       if (gameState !== "playing") return;
       
-      // Prevent rapid double clicks turning 180 degrees into self
       const lastBufferedDir = turnBuffer.length > 0 ? turnBuffer[turnBuffer.length - 1] : direction;
       if (newDir.x === -lastBufferedDir.x && newDir.y === -lastBufferedDir.y) return;
       if (newDir.x === lastBufferedDir.x && newDir.y === lastBufferedDir.y) return;
@@ -522,40 +493,32 @@
       }
     }
 
-    /* Logic Update (Runs at fixed tick intervals) */
     function updateGameLogic() {
       if (gameState !== "playing") return;
 
-      // Handle Direction Queue
       if (turnBuffer.length > 0) {
         direction = turnBuffer.shift();
       }
 
-      // Check Active Powerup Expiration
       if (activePowerup && performance.now() > activePowerup.expiresAt) {
         activePowerup = null;
         powerupStatus.classList.add('hidden');
         if (selectedMode !== 'progressive') currentStepDelay = SPEEDS[selectedMode];
       }
 
-      // Snapshot previous positions for visual smoothing
       prevSnake = JSON.parse(JSON.stringify(snake));
 
-      // Compute Head Target Position
       const head = {
         x: snake[0].x + direction.x,
         y: snake[0].y + direction.y
       };
 
-      // Wall Collisions
       if (head.x < 0 || head.x >= GRID_SIZE || head.y < 0 || head.y >= GRID_SIZE) {
         triggerGameOver("Crashed into the border wall!");
         return;
       }
 
-      // Self Collisions
       const hitSelf = snake.some((part, idx) => {
-        // Exclude tail if it's going to move away unless eating
         if (idx === snake.length - 1 && !(food && head.x === food.x && head.y === food.y)) return false;
         return part.x === head.x && part.y === head.y;
       });
@@ -565,7 +528,6 @@
         return;
       }
 
-      // Check Food Eating
       const eating = food && head.x === food.x && head.y === food.y;
 
       snake.unshift(head);
@@ -574,9 +536,8 @@
         handleFoodEaten(food);
         food = spawnFood();
         
-        // Dynamic speed increment for Progressive mode
         if (selectedMode === 'progressive' && (!activePowerup || activePowerup.type !== 'slow')) {
-          currentStepDelay = Math.max(50, 110 - Math.floor(score / 30) * 4);
+          currentStepDelay = Math.max(65, 140 - Math.floor(score / 30) * 4);
         }
       } else {
         snake.pop();
@@ -635,25 +596,20 @@
     }
 
     /* ==========================================================================
-       RENDERING ENGINE (Sub-frame interpolation & Neon Arcade FX)
+       RENDERING ENGINE
        ========================================================================== */
     function render(interp) {
-      // Clear screen
       ctx.fillStyle = "#0a0f18";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Draw Arcade Grid
       drawGrid();
 
-      // Draw Food
       if (food) drawFood(food);
 
-      // Draw Snake with Interpolated Motion
       if (snake.length > 0) {
         drawSnake(interp);
       }
 
-      // Draw FX Particles & Floating Score Text
       drawParticles();
       drawFloatingTexts();
     }
@@ -687,7 +643,6 @@
       ctx.scale(pulse, pulse);
 
       if (item.type === 'golden') {
-        // Glowing Golden Apple
         ctx.shadowColor = "#fbbf24";
         ctx.shadowBlur = 18;
         ctx.fillStyle = "#fbbf24";
@@ -695,13 +650,11 @@
         ctx.arc(0, 0, radius, 0, Math.PI * 2);
         ctx.fill();
 
-        // Inner shine
         ctx.fillStyle = "#fff";
         ctx.beginPath();
         ctx.arc(-radius * 0.3, -radius * 0.3, radius * 0.25, 0, Math.PI * 2);
         ctx.fill();
       } else if (item.type === 'slow') {
-        // Ice Slow Berry
         ctx.shadowColor = "#38bdf8";
         ctx.shadowBlur = 16;
         ctx.fillStyle = "#38bdf8";
@@ -709,7 +662,6 @@
         ctx.roundRect(-radius, -radius, radius * 2, radius * 2, 6);
         ctx.fill();
       } else if (item.type === 'shrink') {
-        // Pink Shrink Berry
         ctx.shadowColor = "#f43f5e";
         ctx.shadowBlur = 16;
         ctx.fillStyle = "#f43f5e";
@@ -717,7 +669,6 @@
         ctx.arc(0, 0, radius, 0, Math.PI * 2);
         ctx.fill();
       } else {
-        // Standard Glowing Cyber Apple
         ctx.shadowColor = "#20e3b2";
         ctx.shadowBlur = 14;
         ctx.fillStyle = "#20e3b2";
@@ -735,22 +686,18 @@
     }
 
     function drawSnake(interp) {
-      // Clamp interpolation between 0 and 1
       const t = Math.max(0, Math.min(1, interp));
 
-      // Render segments from tail to head for correct overlapping
       for (let i = snake.length - 1; i >= 0; i--) {
         const curr = snake[i];
         const prev = prevSnake[i] || curr;
 
-        // Linear interpolation for silky smooth movement between steps
         const renderX = prev.x + (curr.x - prev.x) * t;
         const renderY = prev.y + (curr.y - prev.y) * t;
 
         const x = renderX * cellSize;
         const y = renderY * cellSize;
 
-        // Body Tapering & Sizing
         const isHead = i === 0;
         const sizeFactor = isHead ? 0.92 : Math.max(0.6, 0.88 - (i / snake.length) * 0.25);
         const segmentSize = cellSize * sizeFactor;
@@ -759,19 +706,16 @@
         ctx.save();
         
         if (isHead) {
-          // Snake Head Drawing
           ctx.shadowColor = "#20e3b2";
           ctx.shadowBlur = 15;
-          ctx.fillStyle = "#a7f3d0"; // Bright glowing mint
+          ctx.fillStyle = "#a7f3d0";
 
           ctx.beginPath();
           ctx.roundRect(x + offset, y + offset, segmentSize, segmentSize, segmentSize * 0.4);
           ctx.fill();
 
-          // Animated Cute Eyes
           drawSnakeEyes(x + cellSize / 2, y + cellSize / 2, direction);
         } else {
-          // Snake Body Gradient & Taper
           const hue = (160 + i * 2) % 360;
           ctx.fillStyle = `hsl(${hue}, 80%, ${Math.max(35, 60 - i * 1.5)}%)`;
 
@@ -792,28 +736,26 @@
       let eye1 = { x: 0, y: 0 };
       let eye2 = { x: 0, y: 0 };
 
-      if (dir.x === 1) { // Right
+      if (dir.x === 1) {
         eye1 = { x: headCx + eyeOffset, y: headCy - eyeOffset };
         eye2 = { x: headCx + eyeOffset, y: headCy + eyeOffset };
-      } else if (dir.x === -1) { // Left
+      } else if (dir.x === -1) {
         eye1 = { x: headCx - eyeOffset, y: headCy - eyeOffset };
         eye2 = { x: headCx - eyeOffset, y: headCy + eyeOffset };
-      } else if (dir.y === -1) { // Up
+      } else if (dir.y === -1) {
         eye1 = { x: headCx - eyeOffset, y: headCy - eyeOffset };
         eye2 = { x: headCx + eyeOffset, y: headCy - eyeOffset };
-      } else { // Down
+      } else {
         eye1 = { x: headCx - eyeOffset, y: headCy + eyeOffset };
         eye2 = { x: headCx + eyeOffset, y: headCy + eyeOffset };
       }
 
-      // Whites
       ctx.fillStyle = "#ffffff";
       ctx.beginPath();
       ctx.arc(eye1.x, eye1.y, eyeRadius, 0, Math.PI * 2);
       ctx.arc(eye2.x, eye2.y, eyeRadius, 0, Math.PI * 2);
       ctx.fill();
 
-      // Pupils facing motion
       ctx.fillStyle = "#080b11";
       ctx.beginPath();
       ctx.arc(eye1.x + dir.x * 1.5, eye1.y + dir.y * 1.5, pupilRadius, 0, Math.PI * 2);
@@ -850,7 +792,7 @@
     }
 
     /* ==========================================================================
-       MAIN GAME LOOP (requestAnimationFrame with accumulator)
+       MAIN GAME LOOP
        ========================================================================== */
     function gameLoop(time) {
       requestAnimationFrame(gameLoop);
@@ -862,30 +804,27 @@
       if (gameState === "playing") {
         accumulator += deltaTime;
 
-        // Run logic ticks based on exact speed delay
         while (accumulator >= currentStepDelay) {
           updateGameLogic();
           accumulator -= currentStepDelay;
         }
       }
 
-      // Sub-frame interpolation ratio (0.0 to 1.0)
       const interp = gameState === "playing" ? (accumulator / currentStepDelay) : 1;
 
       updateEffects();
       render(interp);
     }
 
-    // Start Animation Loop on load
     window.onload = () => {
       resetGame();
+      showOverlay("start"); // Ensure main menu shows immediately on load
       requestAnimationFrame(gameLoop);
     };
 
     /* ==========================================================================
        USER INPUTS & CONTROLS
        ========================================================================== */
-    // Keyboard Controls
     const KEY_MAP = {
       ArrowUp: { x: 0, y: -1 }, w: { x: 0, y: -1 }, W: { x: 0, y: -1 },
       ArrowDown: { x: 0, y: 1 }, s: { x: 0, y: 1 }, S: { x: 0, y: 1 },
@@ -907,50 +846,55 @@
       }
     });
 
-    // Touch Pad Button Event Listeners
-    document.querySelectorAll("[data-dir]").forEach(btn => {
-      btn.addEventListener("click", (e) => {
-        e.preventDefault();
-        sfx.init();
-        const dirStr = btn.dataset.dir;
-        const dirObj = {
-          up: { x: 0, y: -1 },
-          down: { x: 0, y: 1 },
-          left: { x: -1, y: 0 },
-          right: { x: 1, y: 0 }
-        }[dirStr];
-        if (dirObj) setDirection(dirObj);
-      });
-    });
-
-    // Mobile Canvas Swipe Gesture Detection
+    // Mobile Dynamic Swipe & Touch Gesture Detection
     let touchStartX = 0;
     let touchStartY = 0;
+    let touchActive = false;
 
-    canvas.addEventListener("touchstart", (e) => {
+    const handleTouchStart = (e) => {
       sfx.init();
       if (e.touches.length > 0) {
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
+        touchActive = true;
       }
-    }, { passive: true });
+    };
 
-    canvas.addEventListener("touchend", (e) => {
-      if (e.changedTouches.length === 0) return;
-      const dx = e.changedTouches[0].clientX - touchStartX;
-      const dy = e.changedTouches[0].clientY - touchStartY;
-      const minSwipe = 25;
+    const handleTouchMove = (e) => {
+      if (!touchActive || e.touches.length === 0 || gameState !== "playing") return;
+      
+      const currentX = e.touches[0].clientX;
+      const currentY = e.touches[0].clientY;
+      const dx = currentX - touchStartX;
+      const dy = currentY - touchStartY;
+      const minSwipe = 18;
 
-      if (Math.abs(dx) > Math.abs(dy)) {
-        if (Math.abs(dx) > minSwipe) {
+      if (Math.abs(dx) > minSwipe || Math.abs(dy) > minSwipe) {
+        if (Math.abs(dx) > Math.abs(dy)) {
           setDirection(dx > 0 ? { x: 1, y: 0 } : { x: -1, y: 0 });
-        }
-      } else {
-        if (Math.abs(dy) > minSwipe) {
+        } else {
           setDirection(dy > 0 ? { x: 0, y: 1 } : { x: 0, y: -1 });
         }
+        touchStartX = currentX;
+        touchStartY = currentY;
       }
+    };
+
+    const handleTouchEnd = () => {
+      touchActive = false;
+    };
+
+    canvas.addEventListener("touchstart", handleTouchStart, { passive: true });
+    canvas.addEventListener("touchmove", handleTouchMove, { passive: true });
+    canvas.addEventListener("touchend", handleTouchEnd, { passive: true });
+    
+    window.addEventListener("touchstart", (e) => {
+      sfx.init();
+      if (e.target.closest('#overlay')) return;
+      handleTouchStart(e);
     }, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: true });
+    window.addEventListener("touchend", handleTouchEnd, { passive: true });
 
     /* ==========================================================================
        UI OVERLAY MENUS & SOUND TOGGLE
@@ -978,9 +922,9 @@
       btn.addEventListener("click", () => {
         sfx.playClick();
         document.querySelectorAll(".mode-btn").forEach(b => {
-          b.className = "mode-btn py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700/60 border border-slate-700 font-bold text-slate-200 transition-all flex justify-between items-center";
+          b.className = "mode-btn py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700/60 border border-slate-700 font-bold text-slate-200 transition-all flex justify-between items-center text-sm sm:text-base";
         });
-        btn.className = "mode-btn py-3 px-4 rounded-xl bg-emerald-500/20 border-2 border-emerald-500 font-bold text-emerald-300 transition-all flex justify-between items-center shadow-lg shadow-emerald-500/10";
+        btn.className = "mode-btn py-2.5 px-4 rounded-xl bg-emerald-500/20 border-2 border-emerald-500 font-bold text-emerald-300 transition-all flex justify-between items-center text-sm sm:text-base shadow-lg shadow-emerald-500/10";
         selectedMode = btn.dataset.speed;
       });
     });
@@ -990,7 +934,6 @@
     document.getElementById("restartBtn").addEventListener("click", startGame);
     document.getElementById("resumeBtn").addEventListener("click", pauseGame);
 
-    // Main Menu Navigation
     const goToMainMenu = () => {
       sfx.playClick();
       gameState = "menu";
@@ -999,7 +942,7 @@
     document.getElementById("pauseMainMenuBtn").addEventListener("click", goToMainMenu);
     document.getElementById("overMainMenuBtn").addEventListener("click", goToMainMenu);
 
-    // Mute/Unmute Audio Toggle
+    // Sound Toggle Button
     const soundToggle = document.getElementById("soundToggle");
     const soundIconOn = document.getElementById("soundIconOn");
     const soundIconOff = document.getElementById("soundIconOff");
@@ -1020,3 +963,5 @@
   </script>
 </body>
 </html>
+
+Snake code
